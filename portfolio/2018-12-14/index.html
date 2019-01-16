@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Luke Wilimitis | indirect illumination i</title>
+  <meta name="description" content="technology x art">
+
+  <link rel="shortcut icon" href="/assets/img/favicon.ico">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="/portfolio/2018-12-14/">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    
+    <span class="site-title">
+        
+        Luke Wilimitis
+    </span>
+    
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+      <div class="trigger">
+        <!-- About -->
+        <a class="page-link" href="/">about</a>
+
+        <!-- Blog -->
+        <!-- <a class="page-link" href="/blog/">blog</a> -->
+
+        <!-- Pages -->
+        
+          
+        
+          
+        
+          
+        
+          
+            <a class="page-link" href="/portfolio/">portfolio</a>
+          
+        
+          
+        
+          
+        
+
+        <!-- CV link -->
+        <!-- <a class="page-link" href="/assets/pdf/CV.pdf">vitae</a> -->
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">indirect illumination i</h1>
+    <h5 class="post-description"></h5>
+  </header>
+
+  <article class="post-content indirect illumination i clearfix">
+    <div class="img_row">
+  <img class="col" src="/assets/img/2018-12-14-project-3.png" />
+</div>
+<div class="caption">
+  ray traced Blinn-Phong 8 SPP
+</div>
+
+<div class="img_row">
+  <img class="col" src="/assets/img/2018-12-14-project-2.png" />
+</div>
+<div class="caption">
+  Monte Carlo indirect illumination 8 SPP, 1 direct sample, 16 indirect samples
+</div>
+
+<div class="img_row">
+  <img class="col" src="/assets/img/2018-12-14-project-1.png" />
+</div>
+<div class="caption">
+  Monte Carlo indirect illumination 8 SPP, 1 direct sample, 32 indirect samples
+</div>
+
+<p><a href="https://github.com/wilimitis/tracer">source code</a></p>
+
+<p>A first pass at implementing indirect illumination by toying with some of the mathematical machinery introduced in <em>FoCG</em>.</p>
+
+<p>The code approximates a solution to the rendering equation</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(ko) = ∫ 𝜌(ki, ko) Lf(ki) cos𝜃i d𝜎i
+</code></pre></div></div>
+
+<p>where for a given point on a surface</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>∫ = integral over all directions ki
+Ls(ko) = reflected radiance in direction ko
+𝜌(ki, ko) = BRDF of directions ki and ko
+Lf(ki) = field radiance in direction ki
+cos𝜃i = cosine of ki and the surface normal
+d𝜎i = change in solid angle
+</code></pre></div></div>
+
+<p>Taking a single sample</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(ko) ≈ Le(ko) + 𝜌(ki, ko) Lf(ki) cos𝜃i / p(ki)
+</code></pre></div></div>
+
+<p>where according to the following assumptions introduced in <em>FoCG</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>𝜌(ki, ko) = 1 / 𝜋
+Lf(ki) = Ls(-ki)
+p(ki) = cos𝜃i / 𝜋
+</code></pre></div></div>
+
+<p>we arrive at</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(ko) ≈ Le(ko) + Ls(-ki)
+</code></pre></div></div>
+
+<p>We can construct an efficient diffuse-only approach which samples direct lighting and indirect lighting. In the following code the contribution from a single point light is considered.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Color direct = pointLight.intensity * hit.normal.dot(-pointLight.direction(hit.point));
+Color indirect;
+for (int i = 0; i &lt; INDIRECT_SAMPLES; i++) {
+  Ray ray = sample(hit.normal, random(), random());
+  indirect += color(ray);
+}
+indirect /= INDIRECT_SAMPLES;
+return (direct + indirect) * diffuse;
+</code></pre></div></div>
+
+<p>In working out the math behind how a direct light sample is calculated, I realized an interesting relationship exists when evaluating the direct light sample according to the rendering equation integrated over surface area.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(x, ko) = ∫ 𝜌(x, ki, ko) Ls(x', x - x') cos𝜃i cos𝜃' dA / ‖x - x'‖²
+</code></pre></div></div>
+
+<p>Taking a single sample</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(x, ko) ≈ 𝜌(x, ki, ko) Ls(x', x - x') cos𝜃i cos𝜃' dA / (p(x') ‖x - x'‖²)
+</code></pre></div></div>
+
+<p>Since <em>cos𝜃i</em> is, in this case, the cosine of the angle between the surface normal and the direction from <em>x</em> to the light, it is equivalent to the Lambertian term.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hit.normal.dot(-pointLight.direction(hit.point))
+</code></pre></div></div>
+
+<p>Taking a single sample where a ray cast from the surface at <em>x</em> intersects a point light at <em>x’</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ls(x', x - x') = Le(x', x - x')
+𝜃' = 0 ⇒ cos𝜃' = 1
+cos𝜃i = n ∙ (x - x')
+p(x') = 1 / A = 1
+Ls(x, ko) ≈ 𝜌(x, ki, ko) Le(x', x - x') (n ∙ (x - x')) / ‖x - x'‖²
+</code></pre></div></div>
+
+<p>Revealing that implementing a <em>1 / length²</em> falloff in the code above for the direct light sample would improve physical accuracy.</p>
+
+<p>There’s seemingly endless depth in every facet of this equation, and I can’t wait to dive deeper!</p>
+
+  </article>
+
+  
+
+  
+
+</div>
+
+      </div>
+    </div>
+
+    <!-- <footer>
+
+  <div class="wrapper">
+    &copy; Copyright 2019 Luke Wilimitis.
+    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank">Unsplash</a>.
+
+    
+  </div>
+
+</footer>
+ -->
+
+    <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js"></script>
+<script src="/assets/js/katex.js"></script>
+
+
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/assets/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+// ga('create', '', 'auto');
+// ga('send', 'pageview');
+</script>
+
+
+  </body>
+
+</html>

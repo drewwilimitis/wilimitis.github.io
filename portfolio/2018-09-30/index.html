@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>Luke Wilimitis</title>
+  <title>Luke Wilimitis | ray marching i</title>
   <meta name="description" content="technology x art">
 
   <link rel="shortcut icon" href="/assets/img/favicon.ico">
 
   <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="/blog/">
+  <link rel="canonical" href="/portfolio/2018-09-30/">
 </head>
 
 
@@ -79,56 +79,60 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="header-bar">
-  <h1>al-folio</h1>
-  <h2>a simple whitespace theme for academics</h2>
-</div>
+        <div class="post">
 
+  <header class="post-header">
+    <h1 class="post-title">ray marching i</h1>
+    <h5 class="post-description"></h5>
+  </header>
 
-<ul class="post-list">
-  
-    <li>
-      <h2><a class="post-title" href="/blog/2015/comments/">a post with comments</a></h2>
-      <p class="post-meta">October 20, 2015 — 10:59</p>
-      <p>an example of a blog post with comments</p>
-    </li>
-  
-    <li>
-      <h2><a class="post-title" href="/blog/2015/math/">a post with math</a></h2>
-      <p class="post-meta">October 20, 2015 — 10:12</p>
-      <p>an example of a blog post with some math</p>
-    </li>
-  
-    <li>
-      <h2><a class="post-title" href="/blog/2015/code/">a post with code</a></h2>
-      <p class="post-meta">July 15, 2015 — 10:09</p>
-      <p>an example of a blog post with some code</p>
-    </li>
-  
-    <li>
-      <h2><a class="post-title" href="/blog/2015/images/">a post with images</a></h2>
-      <p class="post-meta">May 15, 2015 — 16:01</p>
-      <p>this is what included images could look like</p>
-    </li>
-  
+  <article class="post-content ray marching i clearfix">
+    <p><img class="col" src="/assets/img/2018-09-30-project.gif" /></p>
+
+<p><a href="https://www.shadertoy.com/view/4t3Bzr">source code</a></p>
+
+<p>Being particularly inspired by the works created on <a href="https://www.shadertoy.com">Shadertoy</a> and wanting to further my understanding of the primitives underlying modern computer graphics rendering techniques, I decided to begin working through ray marching, an algorithm which can be found in a number of remarkable shaders.</p>
+
+<ul>
+  <li><a href="https://www.shadertoy.com/view/Xls3D2">Frozen wasteland by Dave_Hoskins</a></li>
+  <li><a href="https://www.shadertoy.com/view/llGGzh">Maze Lattice by Shane</a></li>
+  <li><a href="https://www.shadertoy.com/view/4ttSWf">Rainforest by iq</a></li>
 </ul>
 
+<p>The distinctions between ray “marching”, “tracing”, and “casting” were difficult to reason about initially, however the most important distinction to recognize it seems is the algorithmic difference between computing an exact intersection between a ray and an object and performing an iterative estimation of said intersection. The latter will be considered “ray marching” from this point onward.</p>
 
-<div class="pagination clearfix mb1 mt4">
-  <div class="left">
-    
-      <span class="pagination-item disabled">Newer</span>
-    
-  </div>
-  <div class="right">
-    
-      <a class="pagination-item" href="/blog/page2/">Older</a>
-    
-  </div>
-  <div class="pagination-meta">Page 1 of 2</div>
+<p>Having visited this topic a number of times and finding it impenetrable for a number of reasons (nearly unrecognizable code in shader examples, requiring a rebuilding of linear algebra intuition, and lack of centralization of information), I attempted to synthesize knowledge from various mediums:</p>
+
+<p>From articles posted by luminaries such as Inigo Quilez</p>
+<ul>
+  <li><a href="http://www.iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm">http://www.iquilezles.org/www/articles/raymarchingdf/raymarchingdf.htm</a></li>
+</ul>
+
+<p>To YouTube live coding sessions</p>
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=dKA5ZVALOhs&amp;list=PLH2UW4EHEfFrAnVs_z4nriRRdNxfaOEXW">https://www.youtube.com/watch?v=dKA5ZVALOhs&amp;list=PLH2UW4EHEfFrAnVs_z4nriRRdNxfaOEXW</a></li>
+  <li><a href="https://www.youtube.com/watch?v=yxNnRSefK94">https://www.youtube.com/watch?v=yxNnRSefK94</a></li>
+</ul>
+
+<p>To demoscene forums</p>
+<ul>
+  <li><a href="http://www.pouet.net/topic.php?which=7920">http://www.pouet.net/topic.php?which=7920</a></li>
+</ul>
+
+<p>To the number one result when searching “ray marching algorithm”</p>
+<ul>
+  <li>Jamie Wong’s brilliant article (tutorial?) <a href="http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/">http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/</a></li>
+</ul>
+
+<p>Alas, an interactive shader tutorial written by reinder <a href="https://www.shadertoy.com/view/4dSfRc">https://www.shadertoy.com/view/4dSfRc</a> proved to be the most helpful in building an intuition for the algorithm from an implementation perspective.</p>
+
+  </article>
+
+  
+
+  
+
 </div>
-
-
 
       </div>
     </div>
